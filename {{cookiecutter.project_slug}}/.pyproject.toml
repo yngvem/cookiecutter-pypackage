@@ -1,0 +1,9 @@
+{% if cookiecutter.black %}
+[tool.black]
+line-length = {{cookiecutter.line_length}}
+{% endif %}
+
+{% if cookiecutter.isort %}
+[tool.isort]
+known_third_party = []
+{% endif %}

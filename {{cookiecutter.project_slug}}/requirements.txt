@@ -1,0 +1,27 @@
+pip
+{% if cookiecutter.build %}
+wheel
+twine
+{%- endif %}
+
+{% if cookiecutter.flake8 %}flake8{% endif %}
+{% if cookiecutter.black %}black{% endif %}
+{% if cookiecutter.isort -%}
+isort
+seed-isort-config
+{%- endif %}
+{% if cookiecutter.bumpversion %}bumpversion{% endif %}
+
+{% if cookiecutter.sphinx -%}
+sphinx
+watchdog
+{%- endif %}
+
+{% if cookiecutter.test -%}
+tox
+coverage
+pytest
+pytest-cov
+pytest-randomly
+{%- endif %}
+

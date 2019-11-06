@@ -29,14 +29,16 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
+clean: {% if cookiecutter.build -%}clean-build{% endif %} clean-pyc {% if cookiecutter.test %}clean-test{% endif %} ## remove all build, test, coverage and Python artifacts
 
+{% if cookiecutter.build -%}
 clean-build: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
+{%- endif %}
 
 clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
@@ -44,6 +46,7 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
+{% if cookiecutter.test -%}
 clean-test: ## remove test and coverage artifacts
 	rm -fr .tox/
 	rm -f .coverage
@@ -54,25 +57,19 @@ lint: ## check style with flake8
 	flake8 {{ cookiecutter.project_slug }} tests
 
 test: ## run tests quickly with the default Python
-{%- if cookiecutter.use_pytest == 'y' %}
-	py.test
-{%- else %}
-	python setup.py test
-{%- endif %}
+	pytest --cov={{cookiecutter.project_slug}} --randomly_seed=1
 
 test-all: ## run tests on every Python version with tox
 	tox
 
 coverage: ## check code coverage quickly with the default Python
-{%- if cookiecutter.use_pytest == 'y' %}
 	coverage run --source {{ cookiecutter.project_slug }} -m pytest
-{%- else %}
-	coverage run --source {{ cookiecutter.project_slug }} setup.py test
-{%- endif %}
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
+{%- endif %}
 
+{% if cookiecutter.sphinx %}
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/{{ cookiecutter.project_slug }}.rst
 	rm -f docs/modules.rst
@@ -83,7 +80,9 @@ docs: ## generate Sphinx HTML documentation, including API docs
 
 servedocs: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
+{%- endif %}
 
+{% if cookiecutter.build -%}
 release: dist ## package and upload a release
 	twine upload dist/*
 
@@ -91,6 +90,10 @@ dist: clean ## builds source and wheel package
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
+{%- endif %}
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+einstall: clean
+	pip install -e .
