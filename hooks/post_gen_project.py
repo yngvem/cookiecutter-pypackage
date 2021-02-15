@@ -26,9 +26,6 @@ if __name__ == '__main__':
     if not {{ cookiecutter.test }}:
         remove_tree('tests')
 
-    if not {{ cookiecutter.travis }}:
-        remove_file('.travis.yml')
-
     if not {{ cookiecutter.pre_commit }}:
         remove_file('.pre-commit-config.yaml')
 

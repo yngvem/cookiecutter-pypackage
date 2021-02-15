@@ -20,8 +20,6 @@
   "sphinx": true,
 
   "test": true,
-  "travis": true,
-  "coveralls": true,
   "build": true,
   "bumpversion": true
 }
